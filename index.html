@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A Letter For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-top: #ffd9cc;
+    --bg-bottom: #fff1e6;
+    --env-body: #f3a79e;
+    --env-flap: #f6b6ac;
+    --pocket: #e89089;
+    --seal: #c0392f;
+    --paper: #fdf6ea;
+    --ink: #4a342e;
+    --ink-soft: #7a5f55;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at top, var(--bg-top), var(--bg-bottom));
+    font-family: 'Quicksand', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .floaty {
+    position: absolute;
+    color: #ff9d8e;
+    opacity: 0.35;
+    font-size: 22px;
+    animation: drift 10s ease-in-out infinite;
+    pointer-events: none;
+    user-select: none;
+  }
+  .floaty:nth-child(1) { left: 12%; top: 20%; animation-duration: 9s; }
+  .floaty:nth-child(2) { right: 14%; top: 30%; animation-duration: 12s; animation-delay: 1.5s; font-size: 16px; }
+  .floaty:nth-child(3) { left: 20%; bottom: 18%; animation-duration: 11s; animation-delay: 0.5s; font-size: 18px; }
+  .floaty:nth-child(4) { right: 18%; bottom: 22%; animation-duration: 8.5s; animation-delay: 2s; font-size: 14px; }
+
+  @keyframes drift {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-18px) rotate(8deg); }
+  }
+
+  .scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    z-index: 2;
+  }
+
+  .envelope-wrap {
+    position: relative;
+    width: min(320px, 80vw);
+    height: calc(min(320px, 80vw) * 0.65625 + 110px);
+    overflow: hidden;
+  }
+
+  .envelope {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    aspect-ratio: 320 / 210;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    display: block;
+    perspective: 1200px;
+  }
+
+  .env-body {
+    position: absolute;
+    inset: 0;
+    background: var(--env-body);
+    border-radius: 8px;
+    box-shadow: 0 18px 35px -12px rgba(160, 70, 60, 0.45);
+    z-index: 1;
+  }
+
+  .letter {
+    position: absolute;
+    left: 7%;
+    width: 86%;
+    top: 8%;
+    height: 84%;
+    background: var(--paper);
+    border-radius: 4px;
+    box-shadow: 0 8px 18px -6px rgba(0,0,0,0.25);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8%;
+    text-align: center;
+    transform: translateY(100%) rotate(0deg);
+    transition: transform 0.7s cubic-bezier(.5,-0.2,.3,1.2), box-shadow 0.4s ease;
+  }
+
+  .envelope.is-open .letter {
+    transform: translateY(-46%) rotate(-1.5deg);
+    box-shadow: 0 16px 26px -10px rgba(0,0,0,0.3);
+  }
+
+  .to-line {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(20px, 6.5vw, 26px);
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .env-pocket {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: var(--pocket);
+    clip-path: polygon(0% 100%, 50% 42%, 100% 100%);
+    pointer-events: none;
+  }
+
+  .env-flap {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: var(--env-flap);
+    clip-path: polygon(0% 0%, 100% 0%, 50% 62%);
+    transform-origin: top center;
+    transform: rotateX(0deg);
+    transition: transform 0.7s cubic-bezier(.6,0,.3,1);
+    filter: drop-shadow(0 2px 4px rgba(150,60,50,0.25));
+    backface-visibility: hidden;
+    pointer-events: none;
+  }
+
+  .envelope.is-open .env-flap {
+    transform: rotateX(180deg);
+  }
+
+  .heart-seal {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: 46px;
+    height: 46px;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    transition: transform 0.45s ease, opacity 0.45s ease;
+    opacity: 1;
+    pointer-events: none;
+  }
+  .envelope.is-open .heart-seal {
+    transform: translate(-50%, -50%) scale(0.3) rotate(20deg);
+    opacity: 0;
+  }
+  .heart-seal svg { width: 100%; height: 100%; display: block; }
+
+  .hint {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    margin: 0;
+    min-height: 18px;
+    text-align: center;
+  }
+
+  .reading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(40, 20, 18, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .reading-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .reading-card {
+    position: relative;
+    width: min(420px, 100%);
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--paper);
+    border-radius: 6px;
+    box-shadow: 0 30px 60px -15px rgba(0,0,0,0.5);
+    padding: 36px 30px;
+    transform: scale(0.85) translateY(10px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(.2,.8,.3,1.2), opacity 0.35s ease;
+  }
+  .reading-overlay.is-visible .reading-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .reading-card p {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(16px, 2.4vw, 19px);
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0 0 1em 0;
+    text-align: left;
+  }
+  .reading-card p.sign-off { margin-top: 0.5em; margin-bottom: 0; }
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(74, 52, 46, 0.08);
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+  }
+  .close-btn:hover { background: rgba(74, 52, 46, 0.16); }
+</style>
+</head>
+<body>
+
+  <span class="floaty">♥</span>
+  <span class="floaty">♥</span>
+  <span class="floaty">♥</span>
+  <span class="floaty">♥</span>
+
+  <div class="scene">
+    <div class="envelope-wrap">
+      <button class="envelope" id="envelope" aria-label="Open the envelope">
+        <div class="env-body"></div>
+
+        <div class="letter" id="letter">
+          <p class="to-line">To my love</p>
+        </div>
+
+        <div class="env-pocket"></div>
+
+        <div class="env-flap">
+          <div class="heart-seal">
+            <svg viewBox="0 0 32 29" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 28.5C16 28.5 1.5 19.8 1.5 9.8C1.5 4.7 5.4 1 10 1C13 1 15.2 2.6 16 5.1C16.8 2.6 19 1 22 1C26.6 1 30.5 4.7 30.5 9.8C30.5 19.8 16 28.5 16 28.5Z" fill="#c0392f" stroke="#9c2c23" stroke-width="0.5"/>
+            </svg>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <p class="hint" id="hint">tap the envelope</p>
+  </div>
+
+  <div class="reading-overlay" id="overlay">
+    <div class="reading-card">
+      <button class="close-btn" id="closeBtn" aria-label="Close letter">×</button>
+      <p>Congratulations baby! I’m so sorry I couldn’t be there for your big day so I thought I’d write everything I’d say if I was there today. I thought about writing this letter on my flight to dhaka. I couldn’t sleep and all I could think about is how our time together at uni is over and how amazing this year has been. I can’t believe you’re leaving without me but enough about me. I’m so incredibly proud of you for graduating and with a FIRST. I admire you so much, I’m really excited to see what this new chapter of your life brings for you and I want to witness all of it by your side. I can say with certainty you’re going to do great things.</p>
+      <p>Everyone says your college years are the best years of your life but that’s horseshit because it’s only gonna be up for you from here. That being said, this past year with you has definitely been the best year of mine. I hope you have the best graduation ever, I love you so much my sweet girl. One last thing, no matter where you go, please be my princess, my best friend for life.</p>
+      <p class="sign-off">Love,<br>Sameer</p>
+    </div>
+  </div>
+
+  <script>
+    const envelope = document.getElementById('envelope');
+    const flap = envelope.querySelector('.env-flap');
+    const letter = document.getElementById('letter');
+    const hint = document.getElementById('hint');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+
+    const ROTATE_MS = 700;     // must match the CSS transition duration on .env-flap
+    const SWAP_AT = ROTATE_MS * 0.5; // swap layering once the flap is edge-on (invisible)
+    let swapTimer = null;
+
+    function setHint(text) { hint.textContent = text; }
+
+    function openEnvelope() {
+      flap.style.zIndex = 5;
+      envelope.classList.add('is-open');
+      clearTimeout(swapTimer);
+      swapTimer = setTimeout(() => { flap.style.zIndex = 0; }, SWAP_AT);
+      setHint('tap the letter to read it');
+    }
+
+    function closeEnvelope() {
+      clearTimeout(swapTimer);
+      flap.style.zIndex = 5;
+      envelope.classList.remove('is-open');
+      setHint('tap the envelope');
+    }
+
+    function openReading() {
+      overlay.classList.add('is-visible');
+      setHint('');
+    }
+
+    function closeReading() {
+      overlay.classList.remove('is-visible');
+      setHint('tap the letter to read it');
+    }
+
+    envelope.addEventListener('click', (e) => {
+      const isOpen = envelope.classList.contains('is-open');
+      if (!isOpen) {
+        openEnvelope();
+        return;
+      }
+      if (e.target.closest('#letter')) {
+        openReading();
+      } else {
+        closeEnvelope();
+      }
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeReading();
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeReading();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('is-visible')) {
+        closeReading();
+      }
+    });
+  </script>
+</body>
+</html>
